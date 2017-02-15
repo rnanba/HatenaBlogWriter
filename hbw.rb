@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-VERSION = "0.2"
+VERSION = "0.3"
 
 require_relative './HatenaBlogWriter.rb'
 
@@ -31,8 +31,15 @@ def modified_files_to_update()
     entry_filename = HBW::EntryMetaData.entry_filename(filename)
     if entry_filename
       data = HBW::EntryMetaData.new(entry_filename)
-      if data.mtime < File.mtime(entry_filename) 
-        files.push(entry_filename)
+      if data.mtime < File.mtime(entry_filename)
+        entry_file = HBW::EntryFile.new(entry_filename)
+        if data.sha1 == entry_file.sha1
+          data.fix_mtime()
+          puts "INFO: #{entry_filename} の内容は前回投稿したものと同じでした。"
+          data.save
+        else
+          files.push(entry_filename)
+        end
       end
     end
   }
@@ -61,8 +68,10 @@ when 'new'
 when 'debug'
   abort 'USAGE: hbw.rb debug _entry_filename_' unless ARGV[1]
   ef = HBW::EntryFile.new(ARGV[1])
-  p ef.entry.to_s
-  p "sha1: #{ef.sha1}"
+  puts ef.entry.to_s
+  df = HBW::EntryMetaData.new(ARGV[1])
+  df.set_updated(Time.now, ef.sha1)
+  puts df
 when 'post'
   abort 'USAGE: hbw.rb post _entry_filename_' unless ARGV[1]
   hbw.post(ARGV[1])

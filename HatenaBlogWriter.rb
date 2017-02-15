@@ -70,13 +70,20 @@ module HBW
       @data['edited'] = edited
       @data['sha1'] = sha1
       @data['mtime'] = File.mtime(@entry_filename)
-      save
+    end
+
+    def fix_mtime
+      @data['mtime'] = File.mtime(@entry_filename)
     end
 
     def save
       File.open(@data_filename, "w") { |f|
         YAML.dump(@data, f)
       }
+    end
+
+    def to_s
+      YAML.dump(@data)
     end
   end
   
@@ -154,15 +161,6 @@ module HBW
       return entry
     end
 
-    def set_posted(location)
-      raise "don't mark entry as posted twice." if @location
-      @location = location
-      File.open(@filename, "a") { |f|
-        f.puts
-        f.puts("location: #{location}")
-      }
-    end
-
     def save
       save_as(@filename)
     end
@@ -236,6 +234,7 @@ module HBW
       puts "OK: #{filename}: エントリを投稿しました。"
       data_file.set_posted(location,
                            Time.parse(@client.rc.edited.text), entry_file.sha1)
+      data_file.save
       #puts "OK: 投稿データファイルを作成しました。"
     end
 
@@ -253,6 +252,7 @@ module HBW
       puts "OK: #{filename}: エントリを更新しました。"
       posted_entry = @client.rc.is_a?(Atom::Entry) ? @client.rc : Atom::Entry.new(:stream => @client.rc)
       data_file.set_updated(Time.parse(posted_entry.edited.text), entry_file.sha1)
+      data_file.save
       #puts "OK: 投稿データファイルを更新しました。"
     end
   end
