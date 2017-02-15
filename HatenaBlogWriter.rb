@@ -72,6 +72,10 @@ module HBW
       @data['mtime'] = File.mtime(@entry_filename)
     end
 
+    def set_sha1(sha1)
+      @data['sha1'] = sha1
+    end
+
     def fix_mtime
       @data['mtime'] = File.mtime(@entry_filename)
     end
@@ -182,7 +186,7 @@ module HBW
         "category: #{@header[:category].join(', ')}",
         "draft: #{@header[:draft]}",
         "",
-        @contents
+        @content
       ]
     end
   end

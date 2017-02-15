@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-VERSION = "0.3"
+VERSION = "0.4"
 
 require_relative './HatenaBlogWriter.rb'
 
@@ -65,6 +65,23 @@ when 'new'
     end
     abort "ERROR: ファイル名を生成できませんでした。エントリファイル作成を中止しました。"
   end
+when 'fix_data'
+  ARGV.shift
+  Dir.foreach(HBW::DATA_DIR) { |filename|
+    entry_filename = HBW::EntryMetaData.entry_filename(filename)
+    if entry_filename
+      data = HBW::EntryMetaData.new(entry_filename)
+      entry_file = HBW::EntryFile.new(entry_filename)
+      if data.sha1 != entry_file.sha1
+        puts "#{entry_filename} の内容は前回投稿時と変更ありませんか? (yes/No)"
+        if gets.chomp == 'yes'
+          data.set_sha1(entry_file.sha1)
+          data.save
+          puts "投稿データファイルを更新しました。"
+        end
+      end
+    end
+  }
 when 'debug'
   abort 'USAGE: hbw.rb debug _entry_filename_' unless ARGV[1]
   ef = HBW::EntryFile.new(ARGV[1])
