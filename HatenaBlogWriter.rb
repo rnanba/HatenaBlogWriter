@@ -6,6 +6,8 @@ require 'atomutil'
 require 'yaml'
 require 'digest/sha1'
 
+Encoding.default_external = Encoding::UTF_8
+
 module Atom
   class Content
     def new_body=(value)
@@ -107,6 +109,10 @@ module HBW
       else
         @header[:date] = Time.now
       end
+    end
+
+    def set_title(title)
+      @header[:title] = title
     end
     
     def parse_file

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-VERSION = "0.4"
+VERSION = "0.5"
 
 require_relative './HatenaBlogWriter.rb'
 
@@ -50,6 +50,7 @@ case ARGV[0]
 when 'new'
   if ARGV[1]
     ef = HBW::EntryFile.new(ARGV[1])
+    ef.set_title("新規エントリ")
     ef.save()
     puts "OK: エントリファイルを作成しました。"
   else
@@ -58,6 +59,7 @@ when 'new'
       filename = sprintf("#{base_filename}_%02d.txt", i)
       unless File.exists?(filename)
         ef = HBW::EntryFile.new(filename)
+        ef.set_title("新規エントリ")
         ef.save()
         puts "OK: エントリファイル '#{filename}' を作成しました。"
         exit
