@@ -8,58 +8,6 @@ require 'digest/sha1'
 
 Encoding.default_external = Encoding::UTF_8
 
-module Atom
-  class Content
-    def new_body=(value)
-      @elem.add_text(value.chomp)
-    end
-    alias_method :old_body=, :body=
-    alias_method :body=, :new_body=
-  end
-
-  class Element
-    def new_add(ns, element_name, value, attributes={})
-      element = REXML::Element.new(element_name)
-      if ns.is_a?(Namespace)
-        unless ns.prefix.nil? || ns.prefix.empty?
-          element.name = "#{ns.prefix}:#{element_name}"
-          element.add_namespace ns.prefix, ns.uri unless @ns == ns || @ns == ns.uri
-        else
-          element.add_namespace ns.uri unless @ns == ns || @ns == ns.uri
-        end
-      else
-        element.add_namespace ns unless @ns == ns || @ns.to_s == ns
-      end
-      if value.is_a?(Element)
-        value.elem.each_element do |e|
-          # REXML::Text#clone も動作が怪しいのでこのあたりも怪しい…
-          element.add e.deep_clone
-        end
-        value.elem.attributes.each_attribute do |a|
-          unless a.name =~ /^xmlns(?:\:)?/
-            element.add_attribute a
-          end
-        end
-        # atomutil 0.1.4 で Entry の content 内容のXMLの定義済み文字実
-        # 体参照および文字参照と解釈できる文字列が文字に展開されてしま
-        # う問題への応急処置。
-        element.text = REXML::Text.unnormalize(value.elem.get_text.to_s) unless value.elem.text.nil?
-      else
-        # ここも怪しいが HatenaBlogWriter では使われないので元のまま。
-        if value.is_a?(REXML::Element)
-          element.add_element value.deep_clone
-        else
-          element.add_text value.to_s
-        end
-      end
-      element.add_attributes attributes unless attributes.nil?
-      @elem.add_element element
-    end
-    alias_method :old_add, :add
-    alias_method :add, :new_add
-  end
-end
-
 module HBW
   DATA_DIR = "data"
 
