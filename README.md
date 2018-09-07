@@ -111,7 +111,7 @@ HatenaBlogWriter は、カレントディレクトリにあるファイルで、
 
 ```none:2018-09-08_01.txt
 title: 削除サンプル
-date: 2017-02-12
+date: 2018-09-08
 category: プログラミング, はてな
 draft: no
 delete: yes
