@@ -78,6 +78,14 @@ module HBW
       }
     end
 
+    def delete
+      begin
+        File.delete(@data_filename)
+      rescue
+        puts $!
+      end
+    end
+
     def to_s
       YAML.dump(@data)
     end
@@ -93,6 +101,7 @@ module HBW
       }
       @content = ""
       @location = nil
+      @delete = false
       if File.exists?(filename)
         @header[:date] = File.mtime(filename)
         parse_file()
@@ -127,6 +136,8 @@ module HBW
             end
             if @header[key] != nil
               @header[key] = value
+            elsif key == :delete
+              @delete = /^yes$/.match?(value)
             else
               abort "ERROR: 不正なヘッダ属性: '#{key}'"
             end
@@ -147,6 +158,10 @@ module HBW
     
     def sha1
       Digest::SHA1.hexdigest(to_array.join("\n"))
+    end
+
+    def delete?
+      return @delete
     end
     
     def entry
@@ -177,13 +192,18 @@ module HBW
     end
 
     def to_array
-      [ "title: #{@header[:title]}",
+      a = [
+        "title: #{@header[:title]}",
         "date: #{@header[:date]}",
         "category: #{@header[:category].join(', ')}",
         "draft: #{@header[:draft]}",
         "",
         @content
       ]
+      if @delete
+        a.unshift("delete: yes")
+      end
+      return a
     end
   end
   
@@ -222,6 +242,10 @@ module HBW
     def post(filename)
       ensure_data_dir()
       entry_file = EntryFile.new(filename)
+      if entry_file.delete?
+        puts "INFO: #{filename}: 削除済みエントリです。"
+        return
+      end
       data_file = EntryMetaData.new(filename)
       if data_file.location
         abort "ERROR: #{filename}: 投稿済のエントリファイルです。投稿を中止しました。"
@@ -242,6 +266,15 @@ module HBW
       ensure_data_dir()
       entry_file = EntryFile.new(filename)
       data_file = EntryMetaData.new(filename)
+      if entry_file.delete?
+        begin
+          delete(data_file)
+          puts "OK: #{filename}: エントリを削除しました。"
+        rescue => e
+          puts "NG: #{filename}: エントリの削除に失敗しました。(#{e})"
+        end
+        return
+      end
       unless data_file.location
         abort "ERROR: #{filename}: 未投稿のエントリファイルです。更新を中止しました。"
       end
@@ -254,6 +287,16 @@ module HBW
       data_file.set_updated(Time.parse(posted_entry.edited.text), entry_file.sha1)
       data_file.save
       #puts "OK: 投稿データファイルを更新しました。"
+    end
+
+    def delete(data_file)
+      unless data_file.location
+        # 削除済み
+        return
+      end
+      ensure_get_service()
+      @client.delete_entry(data_file.location)
+      data_file.delete()
     end
   end
 end

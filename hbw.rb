@@ -19,7 +19,9 @@ def new_files_to_post(filenames=nil)
   files = []
   filenames.each { |filename|
     unless File.exists?(HBW::EntryMetaData.data_filename(filename))
-      files.push(filename)
+      unless HBW::EntryFile.new(filename).delete?
+        files.push(filename)
+      end
     end
   }
   files
@@ -88,6 +90,7 @@ when 'debug'
   abort 'USAGE: hbw.rb debug _entry_filename_' unless ARGV[1]
   ef = HBW::EntryFile.new(ARGV[1])
   puts ef.entry.to_s
+  puts "---\ndelete = #{ef.delete?}"
   df = HBW::EntryMetaData.new(ARGV[1])
   df.set_updated(Time.now, ef.sha1)
   puts df
