@@ -103,7 +103,7 @@ module HBW
       @location = nil
       @delete = false
       if File.exists?(filename)
-        @header[:date] = File.mtime(filename)
+        # @header[:date] = File.mtime(filename)
         parse_file()
       else
         @header[:date] = Time.now
@@ -134,7 +134,7 @@ module HBW
             elsif key == :category
               value = value.split(/\s*,\s*/)
             end
-            if @header[key] != nil
+            if @header[key] != nil || key == :date
               @header[key] = value
             elsif key == :delete
               @delete = /^yes$/.match?(value)
@@ -167,7 +167,9 @@ module HBW
     def entry
       entry = Atom::Entry.new
       entry.title = @header[:title]
-      entry.updated = @header[:date]
+      if @header[:date]
+        entry.updated = @header[:date]
+      end
       @header[:category].each { |cat|
         entry.add_category(Atom::Category.new(term: cat.strip()))
       }
