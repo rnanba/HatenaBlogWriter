@@ -1,4 +1,4 @@
-# HatenaBlogWriter (v0.8)
+# HatenaBlogWriter (v0.8.1)
 
 ## 概要
 
