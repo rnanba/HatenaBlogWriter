@@ -172,7 +172,7 @@ module HBW
           content_lines.push(line)
         end
       }
-      @content = normalize_conent(content_lines)
+      @content = normalize_content(content_lines)
     end
 
     def normalize_content(lines)
@@ -189,6 +189,10 @@ module HBW
       }
       @header[:date] = entry.updated.to_s if (!empty_date)
       @content = normalize_content(entry.content.body.lines(chomp:true))
+    end
+
+    def date
+      @header[:date]
     end
     
     def sha1
