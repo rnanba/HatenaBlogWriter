@@ -30,7 +30,7 @@ module HBW
         nil
       end
     end
-
+    
     def self.listData()
       return Dir.glob("*.dat", base: DATA_DIR).map() { |data_filename|
         self.new(self.entry_filename(data_filename))
