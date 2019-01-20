@@ -30,6 +30,12 @@ module HBW
         nil
       end
     end
+
+    def self.listData()
+      return Dir.glob("*.dat", base: DATA_DIR).map() { |data_filename|
+        self.new(self.entry_filename(data_filename))
+      }
+    end
     
     def initialize(entry_filename)
       unless File.exists?(entry_filename)
@@ -42,6 +48,10 @@ module HBW
       else
         @data = {}
       end
+    end
+
+    def entry_filename
+      @entry_filename
     end
     
     def location
@@ -99,8 +109,7 @@ module HBW
   end
   
   class EntryFile
-    def initialize(filename)
-      @filename = filename
+    def initialize(filename_or_entry)
       @header = {
         title: "",
         category: [],
@@ -109,11 +118,19 @@ module HBW
       @content = ""
       @location = nil
       @delete = false
-      if File.exists?(filename)
-        # @header[:date] = File.mtime(filename)
-        parse_file()
+      if (filename_or_entry.is_a?(Atom::Entry)) then
+        @filename = nil
+        parse_entry(filename_or_entry)
+      elsif (filename_or_entry.is_a?(String))
+        @filename = filename_or_entry
+        if File.exists?(@filename)
+          # @header[:date] = File.mtime(filename)
+          parse_file()
+        else
+          @header[:date] = Time.now
+        end
       else
-        @header[:date] = Time.now
+        raise ArgumentError, "arg is not a String or Atom::Entry"
       end
     end
 
@@ -155,12 +172,23 @@ module HBW
           content_lines.push(line)
         end
       }
-      first = content_lines.index {|line| line != ""}
-      last = content_lines.rindex {|line| line != ""}
-      if first && last
-        content_lines = content_lines[first..last]
-        @content = content_lines.join("\n")
-      end
+      @content = normalize_conent(content_lines)
+    end
+
+    def normalize_content(lines)
+      first = lines.index {|line| line != ""}
+      last = lines.rindex {|line| line != ""}
+      return (first && last) ? lines[first..last].join("\n") : ""
+    end
+    
+    def parse_entry(entry, empty_date=false)
+      @header = {
+        title: entry.title,
+        category: entry.categories.map { |c| c.term },
+        draft: entry.control.draft
+      }
+      @header[:date] = entry.updated.to_s if (!empty_date)
+      @content = normalize_content(entry.content.body.lines(chomp:true))
     end
     
     def sha1
@@ -213,6 +241,10 @@ module HBW
         a.unshift("delete: yes")
       end
       return a
+    end
+
+    def to_s
+      to_array.join("\n")
     end
   end
   
