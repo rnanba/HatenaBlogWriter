@@ -137,7 +137,7 @@ module HBW
             if @header[key] != nil || key == :date
               @header[key] = value
             elsif key == :delete
-              @delete = /^yes$/.match?(value)
+              @delete = (/^yes$/.match(value) != nil)
             else
               abort "ERROR: 不正なヘッダ属性: '#{key}'"
             end
