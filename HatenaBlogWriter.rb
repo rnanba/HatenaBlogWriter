@@ -109,7 +109,7 @@ module HBW
   end
   
   class EntryFile
-    def initialize(filename_or_entry)
+    def initialize(filename_or_entry=nil)
       @header = {
         title: "",
         category: [],
@@ -118,7 +118,9 @@ module HBW
       @content = ""
       @location = nil
       @delete = false
-      if (filename_or_entry.is_a?(Atom::Entry)) then
+      if (filename_or_entry == nil) then
+        # nop
+      elsif (filename_or_entry.is_a?(Atom::Entry))
         @filename = nil
         parse_entry(filename_or_entry)
       elsif (filename_or_entry.is_a?(String))
@@ -187,7 +189,7 @@ module HBW
         category: entry.categories.map { |c| c.term },
         draft: entry.control.draft
       }
-      @header[:date] = entry.updated.to_s if (!empty_date)
+      @header[:date] = Time.parse(entry.updated.to_s) if (!empty_date)
       @content = normalize_content(entry.content.body.lines(chomp:true))
     end
 
