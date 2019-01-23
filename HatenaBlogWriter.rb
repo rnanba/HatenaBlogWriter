@@ -11,6 +11,13 @@ Encoding.default_external = Encoding::UTF_8
 module HBW
   DATA_DIR = "data"
 
+  class TextContent < Atom::Content
+    def body=(value)
+      @elem.add_text value
+      self.type = 'text'
+    end
+  end
+
   class EntryMetaData
     def self.data_filename(entry_filename)
       "#{DATA_DIR}/#{entry_filename}.dat"
@@ -173,7 +180,7 @@ module HBW
       @header[:category].each { |cat|
         entry.add_category(Atom::Category.new(term: cat.strip()))
       }
-      entry.content = @content
+      entry.content = HBW::TextContent.new({:body => @content})
       entry.add_control(Atom::Control.new(draft: @header[:draft]))
       return entry
     end
