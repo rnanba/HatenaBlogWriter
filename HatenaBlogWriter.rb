@@ -132,7 +132,7 @@ module HBW
             if key == :date
               value = Time.parse(value)
             elsif key == :category
-              value = value.split(/\s*,\s*/)
+              value = value.strip().split(/\s*,\s*/)
             end
             if @header[key] != nil || key == :date
               @header[key] = value
