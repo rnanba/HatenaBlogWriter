@@ -29,7 +29,7 @@ def update_entry(data_file, entry_file, time_edited)
   data_file.save()
 end
 
-def save_new_entry(entry_file, time_edited, location)
+def save_new_entry(entry_file, time_edited, location, url)
   base_filename = entry_file.date.strftime("%04Y-%02m-%02d")
   i = 0
   loop do
@@ -40,6 +40,7 @@ def save_new_entry(entry_file, time_edited, location)
     puts "OK: #{filename}: エントリファイルを作成しました。"
     data_file = HBW::EntryMetaData.new(filename)
     data_file.set_posted(location, time_edited, entry_file.sha1)
+    data_file.set_url(url)
     data_file.save()
     break
   end
@@ -53,7 +54,9 @@ end
 loader = HBW::FeedLoader.new()
 db = load_db()
 entry_count = 0
+rnd = Random.new
 loader.each_feed { |feed|
+  sleep(0.5 + rnd.rand(0.5)) if entry_count > 0
   break if ENTRY_COUNT_LIMIT > 0 && ENTRY_COUNT_LIMIT <= entry_count
   feed.entries.each { |entry|
     break if ENTRY_COUNT_LIMIT >0 && ENTRY_COUNT_LIMIT <= entry_count
@@ -97,12 +100,13 @@ loader.each_feed { |feed|
         end
         puts "エントリファイルをリモートの内容で更新しますか? (yes/No)"
         if gets.chomp == 'yes'
+          data.set_url(url)
           update_entry(data, entry_file, time_edited)
         end
       end
     else
       puts "新規エントリです。"
-      save_new_entry(entry_file, time_edited, edit)
+      save_new_entry(entry_file, time_edited, edit, url)
     end
   }
 }

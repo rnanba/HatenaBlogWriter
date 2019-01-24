@@ -53,6 +53,10 @@ module HBW
     def entry_filename
       @entry_filename
     end
+
+    def url
+      @date['url']
+    end
     
     def location
       @data['location']
@@ -83,6 +87,10 @@ module HBW
 
     def set_sha1(sha1)
       @data['sha1'] = sha1
+    end
+
+    def set_url(url)
+      @date['url'] = url
     end
 
     def fix_mtime
