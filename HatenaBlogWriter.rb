@@ -90,7 +90,7 @@ module HBW
     end
 
     def set_url(url)
-      @date['url'] = url
+      @data['url'] = url
     end
 
     def fix_mtime
