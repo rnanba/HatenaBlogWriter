@@ -198,7 +198,11 @@ module HBW
         draft: entry.control.draft
       }
       @header[:date] = Time.parse(entry.updated.to_s) if (!empty_date)
-      @content = normalize_content(entry.content.body.lines(chomp:true))
+      if entry.content.body then
+        @content = normalize_content(entry.content.body.lines(chomp:true))
+      else
+        @content = ""
+      end
     end
 
     def date
