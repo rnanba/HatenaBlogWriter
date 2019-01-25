@@ -3,8 +3,6 @@
 require_relative './HatenaBlogWriter.rb'
 require_relative './HatenaBlogDownloader.rb'
 
-ENTRY_COUNT_LIMIT = ARGV.length == 0 ? 5 : ARGV[0].to_i
-
 def load_db
   db = {}
   HBW::EntryMetaData.listData().each() { |data|
@@ -51,15 +49,21 @@ def update_data(data_file, entry, entry_file)
   data_file.save
 end
 
+entry_count_limit = 7
+if ARGV.length > 0 then
+  entry_count_limit = ARGV[0].to_i
+  ARGV.shift
+end
+
 loader = HBW::FeedLoader.new()
 db = load_db()
 entry_count = 0
 rnd = Random.new
 loader.each_feed { |feed|
   sleep(0.5 + rnd.rand(0.5)) if entry_count > 0
-  break if ENTRY_COUNT_LIMIT > 0 && ENTRY_COUNT_LIMIT <= entry_count
+  break if entry_count_limit > 0 && entry_count_limit <= entry_count
   feed.entries.each { |entry|
-    break if ENTRY_COUNT_LIMIT >0 && ENTRY_COUNT_LIMIT <= entry_count
+    break if entry_count_limit >0 && entry_count_limit <= entry_count
     entry_count += 1
     
     puts "---"
