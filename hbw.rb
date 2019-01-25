@@ -104,6 +104,7 @@ when 'version'
   puts "HatenaBlogWriter v#{VERSION}"
 when nil, 'check'
   check = (ARGV[0] == 'check')
+  rnd = Random.new
   files = new_files_to_post()
   if files.size > 0
     puts "新規エントリファイルが #{files.size} 件あります。"
@@ -112,6 +113,7 @@ when nil, 'check'
         puts f
       else
         hbw.post(f)
+        sleep(1.0 + rnd.rand(0.5))
       end
     }
   else
@@ -125,6 +127,7 @@ when nil, 'check'
         puts f
       else
         hbw.update(f)
+        sleep(1.0 + rnd.rand(0.5))
       end
     }
   else
