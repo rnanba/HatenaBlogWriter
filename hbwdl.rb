@@ -77,7 +77,13 @@ loader.each_feed { |feed|
         url = link.href
       end
     }
-    entry_file = HBW::EntryFile.new(entry)
+    entry_file = nil
+    begin
+      entry_file = HBW::EntryFile.new(entry)
+    rescue
+      puts "エントリの解析に失敗しました。: #{$!}"
+      next
+    end
     time_edited = Time.parse(entry.edited.text)
     sha1 = entry_file.sha1()
     puts "URL: " + url
