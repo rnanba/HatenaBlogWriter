@@ -32,8 +32,8 @@ module HBW
     end
     
     def self.listData()
-      return Dir.glob("*.dat", base: DATA_DIR).map() { |data_filename|
-        self.new(self.entry_filename(data_filename))
+      return Dir.glob("#{DATA_DIR}/*.dat").map() { |data_filename|
+        self.new(self.entry_filename(File.basename(data_filename)))
       }
     end
     
