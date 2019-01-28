@@ -3,6 +3,8 @@
 require_relative './HatenaBlogWriter.rb'
 require_relative './HatenaBlogDownloader.rb'
 
+VERSION = "0.1"
+
 def load_db
   db = {}
   HBW::EntryMetaData.listData().each() { |data|
@@ -51,7 +53,12 @@ end
 
 entry_count_limit = 7
 if ARGV.length > 0 then
-  entry_count_limit = ARGV[0].to_i
+  if ARGV[0] == 'version' then
+    puts "HatenaBlogWriterDownloader v#{VERSION}"
+    exit
+  else
+    entry_count_limit = ARGV[0].to_i
+  end
   ARGV.shift
 end
 
