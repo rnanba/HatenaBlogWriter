@@ -1,4 +1,4 @@
-# HatenaBlogWriter (v0.8.3)
+# HatenaBlogWriter (v0.9)
 
 ## 概要
 
@@ -171,6 +171,33 @@ hb.rb のバージョンを確認するには ``version`` サブコマンドを�
 ```shell-session:
 $ hbw.rb version
 HatenaBlogWriter v0.8.3
+$
+```
+
+### fix_data サブコマンド
+
+HatenaBlogWriter のバグ等で投稿データファイルにSHA1ハッシュ値が間違った値で記録されていた場合、バグが修正されたバージョンの HatenaBlogWriter で ``fix_data`` サブコマンドを使用して修正することができます。
+
+```shell-session:
+$ hbw.rb fix_data
+2019-01-30_01.txt の内容は前回投稿時と変更ありませんか? (yes/No)
+yes
+投稿データファイルを更新しました。
+$
+```
+
+*注意* : ``fix_data`` サブコマンドは修正されたエントリファイルがない状態で実行してください。
+
+### fix_data_url サブコマンド
+
+バージョン 0.9 より前の HatenaBlogWriter で投稿したエントリの投稿データファイルにはエントリのURLが記録されていません。
+
+何らかの処理のために投稿データファイルからエントリファイルとエントリのURLの対応表を生成したい場合は、必要に応じて ``fix_data_url`` サブコマンドを使用して、古い投稿データファイルを更新してください。
+
+```shell-session:
+$ hbw.rb fix_data
+2018-10-09_06.txt: エントリのURLを取得しています。
+投稿データファイルを更新しました。
 $
 ```
 
