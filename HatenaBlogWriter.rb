@@ -55,7 +55,7 @@ module HBW
     end
 
     def url
-      @date['url']
+      @data['url']
     end
     
     def location
@@ -296,6 +296,15 @@ module HBW
       author = Atom::Author.new
       author.name = @id
       entry.author = author
+    end
+
+    def get_entry(location)
+      begin
+        return @client.get_entry(location)
+      rescue
+        # はてなの返す Content-Type がまずいのか Atom Entry として認識されない。
+        return Atom::Entry.new(:stream => @client.rc)
+      end
     end
     
     def post(filename)

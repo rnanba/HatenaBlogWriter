@@ -86,6 +86,23 @@ when 'fix_data'
       end
     end
   }
+when 'fix_data_url'
+  ARGV.shift
+  rnd = Random.new
+  Dir.foreach(HBW::DATA_DIR) { |filename|
+    entry_filename = HBW::EntryMetaData.entry_filename(filename)
+    if entry_filename then
+      data = HBW::EntryMetaData.new(entry_filename)
+      unless data.url
+        puts "#{entry_filename}: エントリのURLを取得しています。"
+        entry = hbw.get_entry(data.location)
+        data.set_url(entry.alternate_link)
+        data.save
+        puts "投稿データファイルを更新しました。"
+        sleep(1.0 + rnd.rand(0.5))
+      end
+    end
+  }
 when 'debug'
   abort 'USAGE: hbw.rb debug _entry_filename_' unless ARGV[1]
   ef = HBW::EntryFile.new(ARGV[1])
