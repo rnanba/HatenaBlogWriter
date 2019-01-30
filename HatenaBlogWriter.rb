@@ -317,6 +317,7 @@ module HBW
       puts "OK: #{filename}: エントリを投稿しました。"
       data_file.set_posted(location,
                            Time.parse(@client.rc.edited.text), entry_file.sha1)
+      data_file.set_url(@client.rc.alternate_link)
       data_file.save
       #puts "OK: 投稿データファイルを作成しました。"
     end
@@ -344,6 +345,7 @@ module HBW
       puts "OK: #{filename}: エントリを更新しました。"
       posted_entry = @client.rc.is_a?(Atom::Entry) ? @client.rc : Atom::Entry.new(:stream => @client.rc)
       data_file.set_updated(Time.parse(posted_entry.edited.text), entry_file.sha1)
+      data_file.set_url(posted_entry.alternate_link)
       data_file.save
       #puts "OK: 投稿データファイルを更新しました。"
     end
