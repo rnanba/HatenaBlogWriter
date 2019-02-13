@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-VERSION = "0.9"
+VERSION = "0.9.1"
 
 require_relative './HatenaBlogWriter.rb'
 
@@ -29,6 +29,7 @@ end
 
 def modified_files_to_update()
   files = []
+  return files unless Dir.exist?(HBW::DATA_DIR)
   Dir.foreach(HBW::DATA_DIR) { |filename|
     entry_filename = HBW::EntryMetaData.entry_filename(filename)
     if entry_filename
@@ -71,6 +72,7 @@ when 'new'
   end
 when 'fix_data'
   ARGV.shift
+  exit unless Dir.exist?(HBW::DATA_DIR)
   Dir.foreach(HBW::DATA_DIR) { |filename|
     entry_filename = HBW::EntryMetaData.entry_filename(filename)
     if entry_filename
@@ -88,6 +90,7 @@ when 'fix_data'
   }
 when 'fix_data_url'
   ARGV.shift
+  exit unless Dir.exist?(HBW::DATA_DIR)
   rnd = Random.new
   Dir.foreach(HBW::DATA_DIR) { |filename|
     entry_filename = HBW::EntryMetaData.entry_filename(filename)

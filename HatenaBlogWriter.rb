@@ -32,11 +32,15 @@ module HBW
     end
     
     def self.listData()
-      return Dir.glob("#{DATA_DIR}/*.dat").map() { |data_filename|
-        self.new(self.entry_filename(File.basename(data_filename)))
-      }
+      if (Dir.exist?(DATA_DIR)) then
+        return Dir.glob("#{DATA_DIR}/*.dat").map() { |data_filename|
+          self.new(self.entry_filename(File.basename(data_filename)))
+        }
+      else
+        return []
+      end
     end
-    
+
     def initialize(entry_filename)
       unless File.exists?(entry_filename)
         raise "ERROR: entry file not found."
@@ -98,6 +102,9 @@ module HBW
     end
 
     def save
+      unless Dir.exists?(DATA_DIR)
+        Dir.mkdir(DATA_DIR)
+      end
       File.open(@data_filename, "w") { |f|
         YAML.dump(@data, f)
       }
