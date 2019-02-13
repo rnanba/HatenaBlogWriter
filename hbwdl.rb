@@ -3,7 +3,7 @@
 require_relative './HatenaBlogWriter.rb'
 require_relative './HatenaBlogDownloader.rb'
 
-VERSION = "0.1"
+VERSION = "0.1.1"
 
 def load_db
   db = {}
