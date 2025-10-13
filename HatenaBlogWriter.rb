@@ -42,13 +42,17 @@ module HBW
     end
 
     def initialize(entry_filename)
-      unless File.exists?(entry_filename)
+      unless File.exist?(entry_filename)
         raise "ERROR: entry file not found."
       end
       @entry_filename = entry_filename
       @data_filename = EntryMetaData.data_filename(entry_filename)
-      if File.exists?(@data_filename)
-        @data = YAML.load_file(@data_filename)
+      if File.exist?(@data_filename)
+        if YAML.respond_to?(:safe_load_file)
+          @data = YAML.safe_load_file(@data_filename, permitted_classes:[Time])
+        else
+          @data = YAML.load_file(@data_filename)
+        end
       else
         @data = {}
       end
@@ -102,7 +106,7 @@ module HBW
     end
 
     def save
-      unless Dir.exists?(DATA_DIR)
+      unless Dir.exist?(DATA_DIR)
         Dir.mkdir(DATA_DIR)
       end
       File.open(@data_filename, "w") { |f|
@@ -140,7 +144,7 @@ module HBW
         parse_entry(filename_or_entry)
       elsif (filename_or_entry.is_a?(String))
         @filename = filename_or_entry
-        if File.exists?(@filename)
+        if File.exist?(@filename)
           # @header[:date] = File.mtime(filename)
           parse_file()
         else
@@ -243,7 +247,7 @@ module HBW
     end
     
     def save_as(filename)
-      if File.exists?(filename)
+      if File.exist?(filename)
         abort "ERROR: ファイルが存在します。"
       end
       File.open(filename, "w") { |f|
@@ -287,7 +291,7 @@ module HBW
     end
 
     def ensure_data_dir
-      unless File.exists?(DATA_DIR)
+      unless File.exist?(DATA_DIR)
         Dir.mkdir(DATA_DIR)
         # puts "OK: データディレクトリを作成しました。"
       end

@@ -18,7 +18,7 @@ def new_files_to_post(filenames=nil)
   end
   files = []
   filenames.each { |filename|
-    unless File.exists?(HBW::EntryMetaData.data_filename(filename))
+    unless File.exist?(HBW::EntryMetaData.data_filename(filename))
       unless HBW::EntryFile.new(filename).delete?
         files.push(filename)
       end
@@ -60,7 +60,7 @@ when 'new'
     base_filename = Time.now.strftime("%04Y-%02m-%02d")
     for i in 1..99
       filename = sprintf("#{base_filename}_%02d.txt", i)
-      unless File.exists?(filename)
+      unless File.exist?(filename)
         ef = HBW::EntryFile.new(filename)
         ef.set_title("新規エントリ")
         ef.save()

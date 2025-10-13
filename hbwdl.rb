@@ -19,7 +19,7 @@ def update_entry(data_file, entry_file, time_edited)
   loop do
     i += 1
     filename = sprintf("#{entry_filename}.%d", i)
-    next if File.exists?(filename)
+    next if File.exist?(filename)
     File.rename(entry_filename, filename)
     break
   end
@@ -35,7 +35,7 @@ def save_new_entry(entry_file, time_edited, location, url)
   loop do
     i += 1
     filename = sprintf("#{base_filename}_%02d.txt", i)
-    next if File.exists?(filename)
+    next if File.exist?(filename)
     entry_file.save_as(filename)
     puts "OK: #{filename}: エントリファイルを作成しました。"
     data_file = HBW::EntryMetaData.new(filename)
