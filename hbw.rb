@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-VERSION = "0.9.1"
+VERSION = "0.9.2"
 
 require_relative './HatenaBlogWriter.rb'
 
